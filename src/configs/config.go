@@ -1,0 +1,93 @@
+package config
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/spf13/viper"
+)
+
+type Config struct {
+	Server   ServerConfig
+	Postgres PostgresConfig
+	Redis    RedisConfig
+}
+
+type ServerConfig struct {
+	Port    string
+	RunMode string
+}
+
+type PostgresConfig struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+	DbName   string
+	SslMode  bool
+}
+
+type RedisConfig struct {
+	Host               string
+	Port               string
+	Password           string
+	Db                 string
+	MinIdleConnections int
+	PoolSize           int
+	PoolTimeout        int
+}
+
+func FindConfigPath(env string) string {
+	if env == "docker" {
+		return "/app/configs/config-docker"
+	} else if env == "production" {
+		return "/configs/config-production"
+	} else {
+		return "../configs/config-development"
+	}
+}
+
+func LoadConfig(fileName string, fileType string) (*viper.Viper, error) {
+	v := viper.New()
+	v.SetConfigType(fileType)
+	v.SetConfigName(fileName)
+	v.AddConfigPath(".")
+	v.AutomaticEnv()
+
+	err := v.ReadInConfig()
+	if err != nil {
+		log.Printf("error occurred while reading config")
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			return nil, fmt.Errorf("file does not exist")
+		}
+		return nil, fmt.Errorf("an error was occurred")
+	}
+
+	return v, nil
+}
+
+func ParseConfig(v *viper.Viper) (*Config, error) {
+	config := Config{}
+	err := v.Unmarshal(&config)
+	if err != nil {
+		log.Fatal("an error occurred while parsing config")
+	}
+
+	return &config, nil
+}
+
+func GetConfig() *Config {
+	path := FindConfigPath(os.Getenv("APP_ENV"))
+	v, err := LoadConfig(path, "yml")
+	if err != nil {
+		log.Fatal("can not load config")
+	}
+
+	cnf, err := ParseConfig(v)
+	if err != nil {
+		log.Fatal("can not parse config")
+	}
+
+	return cnf
+}

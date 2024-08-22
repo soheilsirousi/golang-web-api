@@ -5,7 +5,7 @@ import (
 	handler "github.com/soheilsirousi/golang-web-api/src/api/handlers"
 )
 
-func Router(r *gin.RouterGroup) {
-	handler := handler.NewHealthHandler()
-	r.GET("health/", handler.Health)
+func HealthRouter(r *gin.RouterGroup) {
+	healthHandler := handler.NewHealthHandler()
+	r.GET("/health", healthHandler.Health)
 }
