@@ -8,10 +8,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	instance *Config
+)
+
 type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
 	Redis    RedisConfig
+	Password PasswordConfig
 }
 
 type ServerConfig struct {
@@ -36,6 +41,15 @@ type RedisConfig struct {
 	MinIdleConnections int
 	PoolSize           int
 	PoolTimeout        int
+}
+
+type PasswordConfig struct {
+	UpperChars    bool
+	LowerChars    bool
+	InputNum      bool
+	InputSpecials bool
+	MinLength     int
+	MaxLength     int
 }
 
 func FindConfigPath(env string) string {
@@ -78,6 +92,10 @@ func ParseConfig(v *viper.Viper) (*Config, error) {
 }
 
 func GetConfig() *Config {
+	if instance != nil {
+		return instance
+	}
+
 	path := FindConfigPath(os.Getenv("APP_ENV"))
 	v, err := LoadConfig(path, "yml")
 	if err != nil {
@@ -89,5 +107,7 @@ func GetConfig() *Config {
 		log.Fatal("can not parse config")
 	}
 
-	return cnf
+	instance = cnf
+
+	return instance
 }

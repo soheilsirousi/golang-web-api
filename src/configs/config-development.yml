@@ -22,3 +22,10 @@ redis:
   minIdleConnections: 100
   poolSize: 5000
   poolTimeout: 240
+password:
+  UpperChars: true
+  LowerChars: true
+  InputNum: true
+  InputSpecials: true
+  MinLength: 8
+  MaxLength: 24

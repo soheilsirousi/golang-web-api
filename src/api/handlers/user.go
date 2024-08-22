@@ -7,6 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type User struct {
+	Username string `binding:"required" json:"username"`
+	Password string `binding:"required,password" json:"password"`
+}
+
 type UserHandler struct {
 }
 
@@ -45,6 +50,33 @@ func GetUserByIdHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"result":  fmt.Sprintf("user %s is here!", id),
+		"errors":  "",
+	})
+}
+
+func GetUserByQuery(c *gin.Context) {
+	id, _ := c.GetQuery("id")
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"result":  fmt.Sprintf("user from query is here, id: %s", id),
+		"errors":  "",
+	})
+}
+
+func GetRequestBody(c *gin.Context) {
+	var body User
+	err := c.ShouldBindBodyWithJSON(&body)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"result":  "",
+			"errors":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"result":  body,
 		"errors":  "",
 	})
 }
