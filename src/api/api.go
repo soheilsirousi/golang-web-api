@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"github.com/soheilsirousi/golang-web-api/src/api/middlewares"
 	router "github.com/soheilsirousi/golang-web-api/src/api/routers"
 	"github.com/soheilsirousi/golang-web-api/src/api/validations"
 	config "github.com/soheilsirousi/golang-web-api/src/configs"
@@ -16,7 +17,7 @@ func InitServer() {
 	cnf := config.GetConfig()
 	r := gin.New()
 	val, ok := binding.Validator.Engine().(*validator.Validate)
-	r.Use(gin.Logger(), gin.Recovery())
+	r.Use(gin.Logger(), gin.Recovery(), middlewares.Limiter())
 
 	if ok {
 		err := val.RegisterValidation("password", validations.PasswordValidation, true)

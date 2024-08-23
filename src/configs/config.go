@@ -14,6 +14,8 @@ var (
 
 type Config struct {
 	Server   ServerConfig
+	Logger   LoggerConfig
+	Cors     CorsConfig
 	Postgres PostgresConfig
 	Redis    RedisConfig
 	Password PasswordConfig
@@ -22,6 +24,16 @@ type Config struct {
 type ServerConfig struct {
 	Port    string
 	RunMode string
+}
+
+type CorsConfig struct {
+	AllowOrigins string
+}
+
+type LoggerConfig struct {
+	FilePath string
+	Encoding string
+	Level    string
 }
 
 type PostgresConfig struct {
