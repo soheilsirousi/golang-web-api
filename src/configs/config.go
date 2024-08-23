@@ -14,8 +14,8 @@ var (
 
 type Config struct {
 	Server   ServerConfig
-	Logger   LoggerConfig
 	Cors     CorsConfig
+	Logger   LoggerConfig
 	Postgres PostgresConfig
 	Redis    RedisConfig
 	Password PasswordConfig
