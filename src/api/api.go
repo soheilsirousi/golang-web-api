@@ -13,19 +13,16 @@ import (
 	config "github.com/soheilsirousi/golang-web-api/src/configs"
 )
 
-func InitServer() {
-	cnf := config.GetConfig()
+func InitServer(cnf *config.Config) {
 	r := gin.New()
-	val, ok := binding.Validator.Engine().(*validator.Validate)
 	r.Use(gin.Logger(), gin.Recovery(), middlewares.Limiter())
+	SetValidation()
+	SetRouter(r)
 
-	if ok {
-		err := val.RegisterValidation("password", validations.PasswordValidation, true)
-		if err != nil {
-			log.Printf("error while register tag")
-		}
-	}
+	r.Run(fmt.Sprintf(":%s", cnf.Server.Port))
+}
 
+func SetRouter(r *gin.Engine) {
 	api := r.Group("/api")
 	v1 := api.Group("/v1")
 	{
@@ -33,6 +30,15 @@ func InitServer() {
 		router.UserRouter(user)
 		router.HealthRouter(v1)
 	}
+}
 
-	r.Run(fmt.Sprintf(":%s", cnf.Server.Port))
+func SetValidation() {
+	val, ok := binding.Validator.Engine().(*validator.Validate)
+
+	if ok {
+		err := val.RegisterValidation("password", validations.PasswordValidation, true)
+		if err != nil {
+			log.Printf("error while register tag")
+		}
+	}
 }
