@@ -1,6 +1,7 @@
-package data
+package cache
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -8,12 +9,10 @@ import (
 	config "github.com/soheilsirousi/golang-web-api/src/configs"
 )
 
-type RedisHandler struct {
-}
-
 var redisClient *redis.Client
 
-func InitRedis(cnf *config.Config) {
+func InitRedis(cnf *config.Config) error {
+	ctx := context.Background()
 	redisClient = redis.NewClient(&redis.Options{
 		Addr:         fmt.Sprintf("%s:%d", cnf.Redis.Host, cnf.Redis.Port),
 		DB:           cnf.Redis.Db,
@@ -24,9 +23,16 @@ func InitRedis(cnf *config.Config) {
 		PoolSize:     cnf.Redis.PoolSize,
 		PoolTimeout:  cnf.Redis.PoolTimeout * time.Second,
 	})
+
+	_, err := redisClient.Ping(ctx).Result()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func CloseConnection() {
+func CloseRedis() {
 	redisClient.Close()
 }
 

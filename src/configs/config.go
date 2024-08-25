@@ -38,12 +38,16 @@ type LoggerConfig struct {
 }
 
 type PostgresConfig struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DbName   string
-	SslMode  bool
+	Host            string
+	Port            int
+	User            string
+	Password        string
+	DbName          string
+	SslMode         string
+	MaxOpenConn     int
+	MaxIdleConn     int
+	MaxConnLifeTime time.Duration
+	MaxConnIdleTime time.Duration
 }
 
 type RedisConfig struct {
