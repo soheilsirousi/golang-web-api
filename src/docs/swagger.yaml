@@ -1,0 +1,109 @@
+definitions:
+  handler.User:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  helper.BaseResponse:
+    properties:
+      code:
+        type: integer
+      error: {}
+      result: {}
+      success:
+        type: boolean
+      validation_error:
+        items:
+          $ref: '#/definitions/validations.ValidationError'
+        type: array
+    type: object
+  validations.ValidationError:
+    properties:
+      message:
+        type: string
+      property:
+        type: string
+      tag:
+        type: string
+      value:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/user/all:
+    get:
+      consumes:
+      - application/json
+      description: show all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.BaseResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/helper.BaseResponse'
+      summary: all user
+      tags:
+      - users
+  /v1/user/create:
+    post:
+      consumes:
+      - application/json
+      description: create user
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.BaseResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/helper.BaseResponse'
+      summary: create user
+      tags:
+      - users
+  /v1/user/username/{username}:
+    get:
+      consumes:
+      - application/json
+      description: get user by username
+      parameters:
+      - description: user username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.BaseResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/helper.BaseResponse'
+      summary: get user
+      tags:
+      - users
+swagger: "2.0"

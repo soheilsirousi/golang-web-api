@@ -11,15 +11,18 @@ import (
 	router "github.com/soheilsirousi/golang-web-api/src/api/routers"
 	"github.com/soheilsirousi/golang-web-api/src/api/validations"
 	config "github.com/soheilsirousi/golang-web-api/src/configs"
+	"github.com/soheilsirousi/golang-web-api/src/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func InitServer(cnf *config.Config) {
+func InitServer(cfg *config.Config) {
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery(), middlewares.Limiter())
 	SetValidation()
 	SetRouter(r)
-
-	r.Run(fmt.Sprintf(":%s", cnf.Server.Port))
+	SetSwagger(r, cfg)
+	r.Run(fmt.Sprintf(":%s", cfg.Server.Port))
 }
 
 func SetRouter(r *gin.Engine) {
@@ -41,4 +44,15 @@ func SetValidation() {
 			log.Printf("error while register tag")
 		}
 	}
+}
+
+func SetSwagger(r *gin.Engine, cfg *config.Config) {
+	docs.SwaggerInfo.Title = "golang web api"
+	docs.SwaggerInfo.Description = "golang web api"
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.BasePath = "/api"
+	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", cfg.Server.Port)
+	docs.SwaggerInfo.Schemes = []string{"http"}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
